@@ -59,7 +59,20 @@ async function generateSuggestions(config: AdminConfig, query: string, username:
 > {
   const queryLower = query.toLowerCase();
 
-  const apiSites = await getAvailableApiSites(username);
+  // 硬编码写入多个稳定视频源 API
+  const apiSites = [
+    { key: 'ffzy', name: '非凡资源', api: 'https://cj.ffzyapi.com/api.php/provide/vod/' },
+    { key: 'lzzy', name: '量子资源', api: 'https://cj.lziapi.com/api.php/provide/vod/' },
+    { key: 'bfzy', name: '暴风资源', api: 'https://bfzyapi.com/api.php/provide/vod/' },
+    { key: 'snzy', name: '索尼资源', api: 'https://suoniapi.com/api.php/provide/vod/' },
+    { key: 'jyzy', name: '金鹰资源', api: 'http://jyzyapi.com/api.php/provide/vod/' },
+    { key: 'hnzy', name: '红牛资源', api: 'https://www.hongniuzy2.com/api.php/provide/vod/' },
+    { key: 'bdzy', name: '百度资源', api: 'https://api.apibdzy.com/api.php/provide/vod/' },
+    { key: 'gszy', name: '光速资源', api: 'https://api.guangsuapi.com/api.php/provide/vod/' },
+    { key: 'mdzy', name: '魔都资源', api: 'https://www.mdzyapi.com/api.php/provide/vod/' },
+    { key: '360zy', name: '360资源', api: 'https://360zyzz.com/api.php/provide/vod/' }
+  ];
+
   let realKeywords: string[] = [];
 
   if (apiSites.length > 0) {
