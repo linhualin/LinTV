@@ -67,16 +67,39 @@ export async function refreshLiveChannels(liveInfo: {
       'User-Agent': ua,
     },
   });
-  const data = await response.text();
-  const result = parseM3U(liveInfo.key, data);
-  const epgUrl = liveInfo.epg || result.tvgUrl;
-  const epgs = await parseEpg(epgUrl, liveInfo.ua || defaultUA, result.channels.map(channel => channel.tvgId).filter(tvgId => tvgId));
-  cachedLiveChannels[liveInfo.key] = {
-    channelNumber: result.channels.length,
-    channels: result.channels,
-    epgUrl: epgUrl,
-    epgs: epgs,
-  };
+ if (!response.ok) {
+  throw new Error(
+    `直播源请求失败：${response.status} ${response.statusText}`
+  );
+}
+
+const data = await response.text();
+const result = parseM3U(liveInfo.key, data);
+
+if (result.channels.length === 0) {
+  throw new Error('M3U 文件中没有解析到有效频道');
+}
+
+// IPTV-ORG 全球源数据量非常大，Netlify 环境下跳过 EPG，避免接口超时
+const skipEpg = liveInfo.key === 'iptv-org-category';
+const epgUrl = skipEpg ? '' : liveInfo.epg || result.tvgUrl;
+
+const epgs = skipEpg
+  ? {}
+  : await parseEpg(
+      epgUrl,
+      liveInfo.ua || defaultUA,
+      result.channels
+        .map((channel) => channel.tvgId)
+        .filter((tvgId) => tvgId)
+    );
+
+cachedLiveChannels[liveInfo.key] = {
+  channelNumber: result.channels.length,
+  channels: result.channels,
+  epgUrl,
+  epgs,
+};
   return result.channels.length;
 }
 
