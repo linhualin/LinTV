@@ -224,7 +224,7 @@ async function getInitConfig(configFile: string, subConfig: {
       Users: [],
     },
     SourceConfig: [
-      { key: 'ffzy', name: '非凡资源', api: 'https://cj.ffzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+    { key: 'ffzy', name: '非凡资源', api: 'https://cj.ffzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
       { key: 'lzzy', name: '量子资源', api: 'https://cj.lziapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
       { key: 'bfzy', name: '暴风资源', api: 'https://bfzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
       { key: 'snzy', name: '索尼资源', api: 'https://suoniapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
@@ -234,16 +234,12 @@ async function getInitConfig(configFile: string, subConfig: {
       { key: 'gszy', name: '光速资源', api: 'https://api.guangsuapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
       { key: 'mdzy', name: '魔都资源', api: 'https://www.mdzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
       { key: '360zy', name: '360资源', api: 'https://360zyzz.com/api.php/provide/vod/', disabled: false, from: 'custom' },
-      { key: 'zdzy', name: '最大资源', api: 'https://api.zuidapi.com/api.php/provide/vod/' },
-      { key: 'iqiyi', name: 'iQIYI资源', api: 'https://iqiyi.cdn-zy.com/api.php/provide/vod/' },
-      { key: 'ikun', name: 'IKUN资源', api: 'https://ikunzyapi.com/api.php/provide/vod/' },
-      { key: 'dytt', name: '电影天堂资源', api: 'http://dayi.link/api.php/provide/vod/' },
-      { key: 'ryzy', name: '如意资源', api: 'https://ryzyapi.com/api.php/provide/vod/' },
-      { key: 'jszy', name: '极速资源', api: 'https://jszyapi.com/api.php/provide/vod/' },
-      { key: 'lzzy', name: '量子资源', api: 'https://cj.lziapi.com/api.php/provide/vod/' },
-      { key: 'ffzy', name: '非凡资源', api: 'https://cj.ffzyapi.com/api.php/provide/vod/' },
-      { key: 'bfzy', name: '暴风资源', api: 'https://bfzyapi.com/api.php/provide/vod/' },
-      { key: 'snzy', name: '索尼资源', api: 'https://suoniapi.com/api.php/provide/vod/' }
+      { key: 'zdzy', name: '最大资源', api: 'https://api.zuidapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'iqiyi', name: 'iQIYI资源', api: 'https://iqiyi.cdn-zy.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'ikun', name: 'IKUN资源', api: 'https://ikunzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'dytt', name: '电影天堂资源', api: 'http://dayi.link/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'ryzy', name: '如意资源', api: 'https://ryzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'jszy', name: '极速资源', api: 'https://jszyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' }
     ],
     CustomCategories: [],
     LiveConfig: [],
@@ -441,7 +437,7 @@ export async function getCacheTime(): Promise<number> {
 export async function getAvailableApiSites(user?: string): Promise<ApiSite[]> {
   // 强制直接返回内置视频源，绕过 Redis 数据库及用户权限校验
   return [
-    { key: 'ffzy', name: '非凡资源', api: 'https://cj.ffzyapi.com/api.php/provide/vod/' },
+  { key: 'ffzy', name: '非凡资源', api: 'https://cj.ffzyapi.com/api.php/provide/vod/' },
     { key: 'lzzy', name: '量子资源', api: 'https://cj.lziapi.com/api.php/provide/vod/' },
     { key: 'bfzy', name: '暴风资源', api: 'https://bfzyapi.com/api.php/provide/vod/' },
     { key: 'snzy', name: '索尼资源', api: 'https://suoniapi.com/api.php/provide/vod/' },
@@ -450,7 +446,13 @@ export async function getAvailableApiSites(user?: string): Promise<ApiSite[]> {
     { key: 'bdzy', name: '百度资源', api: 'https://api.apibdzy.com/api.php/provide/vod/' },
     { key: 'gszy', name: '光速资源', api: 'https://api.guangsuapi.com/api.php/provide/vod/' },
     { key: 'mdzy', name: '魔都资源', api: 'https://www.mdzyapi.com/api.php/provide/vod/' },
-    { key: '360zy', name: '360资源', api: 'https://360zyzz.com/api.php/provide/vod/' }
+    { key: '360zy', name: '360资源', api: 'https://360zyzz.com/api.php/provide/vod/' },
+    { key: 'zdzy', name: '最大资源', api: 'https://api.zuidapi.com/api.php/provide/vod/' },
+    { key: 'iqiyi', name: 'iQIYI资源', api: 'https://iqiyi.cdn-zy.com/api.php/provide/vod/' },
+    { key: 'ikun', name: 'IKUN资源', api: 'https://ikunzyapi.com/api.php/provide/vod/' },
+    { key: 'dytt', name: '电影天堂资源', api: 'http://dayi.link/api.php/provide/vod/' },
+    { key: 'ryzy', name: '如意资源', api: 'https://ryzyapi.com/api.php/provide/vod/' },
+    { key: 'jszy', name: '极速资源', api: 'https://jszyapi.com/api.php/provide/vod/' }
   ];
 }
 
