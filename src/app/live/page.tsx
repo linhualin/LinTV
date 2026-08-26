@@ -49,6 +49,63 @@ interface LiveSource {
   disabled?: boolean;
 }
 
+// 浏览器端解析 M3U，避免超大直播源经过 Netlify Serverless
+function parseM3UInBrowser(
+  sourceKey: string,
+  m3uContent: string
+): LiveChannel[] {
+  const channels: LiveChannel[] = [];
+  const lines = m3uContent
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  let channelIndex = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (!line.startsWith('#EXTINF:')) {
+      continue;
+    }
+
+    const nextLine = lines[i + 1];
+
+    if (!nextLine || nextLine.startsWith('#')) {
+      continue;
+    }
+
+    const getAttribute = (name: string) => {
+      const match = line.match(new RegExp(`${name}="([^"]*)"`));
+      return match?.[1] || '';
+    };
+
+    const commaIndex = line.lastIndexOf(',');
+    const title =
+      commaIndex >= 0 ? line.slice(commaIndex + 1).trim() : '';
+
+    const tvgName = getAttribute('tvg-name');
+    const name = title || tvgName;
+
+    if (name) {
+      channels.push({
+        id: `${sourceKey}-${channelIndex}`,
+        tvgId: getAttribute('tvg-id'),
+        name,
+        logo: getAttribute('tvg-logo'),
+        group: getAttribute('group-title') || '其他',
+        url: nextLine,
+      });
+
+      channelIndex++;
+    }
+
+    i++;
+  }
+
+  return channels;
+}
+
 function LivePageClient() {
   // -----------------------------------------------------------------------------
   // 状态变量（State）
@@ -295,17 +352,41 @@ function LivePageClient() {
       setIsVideoLoading(true);
 
       // 从 cachedLiveChannels 获取频道信息
-      const response = await fetch(`/api/live/channels?source=${source.key}`);
-      if (!response.ok) {
-        throw new Error('获取频道列表失败');
-      }
+      let channelsData: LiveChannel[];
 
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.error || '获取频道列表失败');
-      }
+// IPTV-ORG 全球源直接在浏览器下载和解析
+// 避免依赖 Netlify Serverless 的内存缓存
+if (source.key === 'iptv-org-category') {
+  const response = await fetch(source.url, {
+    cache: 'no-store',
+  });
 
-      const channelsData = result.data;
+  if (!response.ok) {
+    throw new Error(
+      `直播源下载失败：${response.status} ${response.statusText}`
+    );
+  }
+
+  const m3uContent = await response.text();
+  channelsData = parseM3UInBrowser(source.key, m3uContent);
+} else {
+  // 其他直播源继续使用原来的服务器接口
+  const response = await fetch(
+    `/api/live/channels?source=${encodeURIComponent(source.key)}`
+  );
+
+  if (!response.ok) {
+    throw new Error('获取频道列表失败');
+  }
+
+  const result = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.error || '获取频道列表失败');
+  }
+
+  channelsData = result.data;
+}
       if (!channelsData || channelsData.length === 0) {
         // 不抛出错误，而是设置空频道列表
         setCurrentChannels([]);
