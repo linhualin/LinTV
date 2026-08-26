@@ -82,7 +82,8 @@ export default async function RootLayout({
 
   // 将运行时配置注入到全局 window 对象，供客户端在运行时读取
   const runtimeConfig = {
-    STORAGE_TYPE: process.env.NEXT_PUBLIC_STORAGE_TYPE || 'localstorage',
+// 前端播放记录、收藏和搜索记录固定保存在浏览器
+    STORAGE_TYPE: 'localstorage',
     DOUBAN_PROXY_TYPE: doubanProxyType,
     DOUBAN_PROXY: doubanProxy,
     DOUBAN_IMAGE_PROXY_TYPE: doubanImageProxyType,
