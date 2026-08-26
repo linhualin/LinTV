@@ -223,7 +223,18 @@ async function getInitConfig(configFile: string, subConfig: {
     UserConfig: {
       Users: [],
     },
-    SourceConfig: [],
+    SourceConfig: [
+      { key: 'ffzy', name: '非凡资源', api: 'https://cj.ffzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'lzzy', name: '量子资源', api: 'https://cj.lziapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'bfzy', name: '暴风资源', api: 'https://bfzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'snzy', name: '索尼资源', api: 'https://suoniapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'jyzy', name: '金鹰资源', api: 'http://jyzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'hnzy', name: '红牛资源', api: 'https://www.hongniuzy2.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'bdzy', name: '百度资源', api: 'https://api.apibdzy.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'gszy', name: '光速资源', api: 'https://api.guangsuapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: 'mdzy', name: '魔都资源', api: 'https://www.mdzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+      { key: '360zy', name: '360资源', api: 'https://360zyzz.com/api.php/provide/vod/', disabled: false, from: 'custom' }
+    ],
     CustomCategories: [],
     LiveConfig: [],
   };
@@ -418,53 +429,19 @@ export async function getCacheTime(): Promise<number> {
 }
 
 export async function getAvailableApiSites(user?: string): Promise<ApiSite[]> {
-  const config = await getConfig();
-  const allApiSites = config.SourceConfig.filter((s) => !s.disabled);
-
-  if (!user) {
-    return allApiSites;
-  }
-
-  const userConfig = config.UserConfig.Users.find((u) => u.username === user);
-  if (!userConfig) {
-    return allApiSites;
-  }
-
-  // 优先根据用户自己的 enabledApis 配置查找
-  if (userConfig.enabledApis && userConfig.enabledApis.length > 0) {
-    const userApiSitesSet = new Set(userConfig.enabledApis);
-    return allApiSites.filter((s) => userApiSitesSet.has(s.key)).map((s) => ({
-      key: s.key,
-      name: s.name,
-      api: s.api,
-      detail: s.detail,
-    }));
-  }
-
-  // 如果没有 enabledApis 配置，则根据 tags 查找
-  if (userConfig.tags && userConfig.tags.length > 0 && config.UserConfig.Tags) {
-    const enabledApisFromTags = new Set<string>();
-
-    // 遍历用户的所有 tags，收集对应的 enabledApis
-    userConfig.tags.forEach(tagName => {
-      const tagConfig = config.UserConfig.Tags?.find(t => t.name === tagName);
-      if (tagConfig && tagConfig.enabledApis) {
-        tagConfig.enabledApis.forEach(apiKey => enabledApisFromTags.add(apiKey));
-      }
-    });
-
-    if (enabledApisFromTags.size > 0) {
-      return allApiSites.filter((s) => enabledApisFromTags.has(s.key)).map((s) => ({
-        key: s.key,
-        name: s.name,
-        api: s.api,
-        detail: s.detail,
-      }));
-    }
-  }
-
-  // 如果都没有配置，返回所有可用的 API 站点
-  return allApiSites;
+  // 强制直接返回内置视频源，绕过 Redis 数据库及用户权限校验
+  return [
+    { key: 'ffzy', name: '非凡资源', api: 'https://cj.ffzyapi.com/api.php/provide/vod/' },
+    { key: 'lzzy', name: '量子资源', api: 'https://cj.lziapi.com/api.php/provide/vod/' },
+    { key: 'bfzy', name: '暴风资源', api: 'https://bfzyapi.com/api.php/provide/vod/' },
+    { key: 'snzy', name: '索尼资源', api: 'https://suoniapi.com/api.php/provide/vod/' },
+    { key: 'jyzy', name: '金鹰资源', api: 'http://jyzyapi.com/api.php/provide/vod/' },
+    { key: 'hnzy', name: '红牛资源', api: 'https://www.hongniuzy2.com/api.php/provide/vod/' },
+    { key: 'bdzy', name: '百度资源', api: 'https://api.apibdzy.com/api.php/provide/vod/' },
+    { key: 'gszy', name: '光速资源', api: 'https://api.guangsuapi.com/api.php/provide/vod/' },
+    { key: 'mdzy', name: '魔都资源', api: 'https://www.mdzyapi.com/api.php/provide/vod/' },
+    { key: '360zy', name: '360资源', api: 'https://360zyzz.com/api.php/provide/vod/' }
+  ];
 }
 
 export async function setCachedConfig(config: AdminConfig) {
