@@ -54,7 +54,7 @@ export default async function RootLayout({
   let disableYellowFilter =
     process.env.NEXT_PUBLIC_DISABLE_YELLOW_FILTER === 'true';
   let fluidSearch = process.env.NEXT_PUBLIC_FLUID_SEARCH !== 'false';
-  let enableWebLive = false;
+  const enableWebLive = true;
   let customCategories = [] as {
     name: string;
     type: 'movie' | 'tv';
@@ -78,7 +78,6 @@ export default async function RootLayout({
       query: category.query,
     }));
     fluidSearch = config.SiteConfig.FluidSearch;
-    enableWebLive = config.SiteConfig.EnableWebLive ?? false;
   }
 
   // 将运行时配置注入到全局 window 对象，供客户端在运行时读取
