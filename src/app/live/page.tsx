@@ -749,7 +749,7 @@ if (source.key === 'iptv-org-category') {
             title: currentChannelRef.current.name,
             source_name: currentSourceRef.current.name,
             year: '',
-            cover: `/api/proxy/logo?url=${encodeURIComponent(currentChannelRef.current.logo)}&source=${currentSourceRef.current.key}`,
+            cover: `/api/proxy/logo?url=${encodeURIComponent(currentChannelRef.current.logo)}&moontv-source=${currentSourceRef.current.key}`,
             total_episodes: 1,
             save_time: Date.now(),
             search_title: '',
@@ -1505,7 +1505,7 @@ if (source.key === 'iptv-org-category') {
                                 <div className='w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden'>
                                   {channel.logo ? (
                                     <img
-                                      src={`/api/proxy/logo?url=${encodeURIComponent(channel.logo)}&source=${currentSource?.key || ''}`}
+                                      src={`/api/proxy/logo?url=${encodeURIComponent(channel.logo)}&moontv-source=${currentSource?.key || ''}`}
                                       alt={channel.name}
                                       className='w-full h-full rounded object-contain'
                                       loading="lazy"
@@ -1613,7 +1613,7 @@ if (source.key === 'iptv-org-category') {
                   <div className='w-20 h-20 bg-gray-300 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden'>
                     {currentChannel.logo ? (
                       <img
-                        src={`/api/proxy/logo?url=${encodeURIComponent(currentChannel.logo)}&source=${currentSource?.key || ''}`}
+                        src={`/api/proxy/logo?url=${encodeURIComponent(currentChannel.logo)}&moontv-source=${currentSource?.key || ''}`}
                         alt={currentChannel.name}
                         className='w-full h-full rounded object-contain'
                         loading="lazy"
