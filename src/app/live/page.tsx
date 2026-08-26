@@ -356,7 +356,10 @@ function LivePageClient() {
 
 // IPTV-ORG 全球源直接在浏览器下载和解析
 // 避免依赖 Netlify Serverless 的内存缓存
-if (source.key === 'iptv-org-category') {
+if (
+  source.key === 'iptv-org-category' ||
+  source.key === 'iptv-org-country'
+) {
   const response = await fetch(source.url, {
     cache: 'no-store',
   });
