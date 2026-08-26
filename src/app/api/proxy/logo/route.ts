@@ -54,7 +54,7 @@ export async function GET(request: Request) {
 
     // 设置缓存头
     headers.set('Cache-Control', 'public, max-age=86400, s-maxage=86400'); // 缓存一天
-
+    headers.set('Netlify-Vary', 'query');
     // 直接返回图片流
     return new Response(imageResponse.body, {
       status: 200,
