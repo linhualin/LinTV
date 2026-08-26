@@ -346,8 +346,35 @@ export function configSelfCheck(adminConfig: AdminConfig): AdminConfig {
     adminConfig.CustomCategories = [];
   }
   if (!adminConfig.LiveConfig || !Array.isArray(adminConfig.LiveConfig)) {
-    adminConfig.LiveConfig = [];
-  }
+  adminConfig.LiveConfig = [];
+}
+
+// 内置 IPTV-ORG 全球分类直播源
+const builtInIptvOrgSource: NonNullable<
+  AdminConfig['LiveConfig']
+>[number] = {
+  key: 'iptv-org-category',
+  name: 'IPTV 全球分类直播源',
+  url: 'https://iptv-org.github.io/iptv/index.category.m3u',
+  ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36',
+  from: 'config',
+  disabled: false,
+};
+
+const builtInLiveIndex = adminConfig.LiveConfig.findIndex(
+  (live) => live.key === builtInIptvOrgSource.key
+);
+
+if (builtInLiveIndex === -1) {
+  // 没有该直播源时，添加到直播源列表第一位
+  adminConfig.LiveConfig.unshift(builtInIptvOrgSource);
+} else {
+  // 已经存在时，纠正地址并确保启用，同时保留频道数量等运行数据
+  adminConfig.LiveConfig[builtInLiveIndex] = {
+    ...adminConfig.LiveConfig[builtInLiveIndex],
+    ...builtInIptvOrgSource,
+  };
+}
 
   // 站长变更自检
   const ownerUser = process.env.USERNAME;
