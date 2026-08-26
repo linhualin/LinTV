@@ -42,8 +42,14 @@ export async function getCachedLiveChannels(key: string): Promise<LiveChannels |
     if (channelNum === 0) {
       return null;
     }
-    liveInfo.channelNumber = channelNum;
-    await db.saveAdminConfig(config);
+   liveInfo.channelNumber = channelNum;
+
+// 数据库保存失败不能阻止已经解析成功的频道返回
+try {
+  await db.saveAdminConfig(config);
+} catch {
+  // 忽略频道数量保存失败
+}
   }
   return cachedLiveChannels[key] || null;
 }
