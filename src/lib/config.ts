@@ -239,7 +239,19 @@ async function getInitConfig(configFile: string, subConfig: {
       { key: 'ikun', name: 'IKUN资源', api: 'https://ikunzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
       { key: 'dytt', name: '电影天堂资源', api: 'http://dayi.link/api.php/provide/vod/', disabled: false, from: 'custom' },
       { key: 'ryzy', name: '如意资源', api: 'https://ryzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
-      { key: 'jszy', name: '极速资源', api: 'https://jszyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' }
+      { key: 'jszy', name: '极速资源', api: 'https://jszyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'wzzy', name: '无尽资源', api: 'https://api.wujinapi.me/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'wlzy', name: '卧龙资源', api: 'https://collect.wolongzyw.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'ckzy', name: '采客资源', api: 'https://caiji.ckzy.me/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'kkzy', name: '快客资源', api: 'https://kuaikezy.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'subzy', name: '速播资源', api: 'https://subocaiji.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'tiankong', name: '天空资源', api: 'https://m3u8.tiankongapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'dbzy', name: '豆瓣资源', api: 'https://dbzy.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'hyzy', name: '海洋资源', api: 'https://haiyangzyapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'xlzy', name: '新浪资源', api: 'https://api.xinlangapi.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'mhzy', name: '猕猴桃资源', api: 'https://mihoutaow.com/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'hfzy', name: '黑狐资源', api: 'https://fuhu.2s0.cn/api.php/provide/vod/', disabled: false, from: 'custom' },
+  { key: 'zmzy', name: '追剧资源', api: 'https://www.zhuijuka.com/api.php/provide/vod/', disabled: false, from: 'custom' }
     ],
     CustomCategories: [],
     LiveConfig: [],
@@ -504,7 +516,19 @@ export async function getAvailableApiSites(user?: string): Promise<ApiSite[]> {
     { key: 'ikun', name: 'IKUN资源', api: 'https://ikunzyapi.com/api.php/provide/vod/' },
     { key: 'dytt', name: '电影天堂资源', api: 'http://dayi.link/api.php/provide/vod/' },
     { key: 'ryzy', name: '如意资源', api: 'https://ryzyapi.com/api.php/provide/vod/' },
-    { key: 'jszy', name: '极速资源', api: 'https://jszyapi.com/api.php/provide/vod/' }
+    { key: 'jszy', name: '极速资源', api: 'https://jszyapi.com/api.php/provide/vod/' },
+    { key: 'wzzy', name: '无尽资源', api: 'https://api.wujinapi.me/api.php/provide/vod/' },
+  { key: 'wlzy', name: '卧龙资源', api: 'https://collect.wolongzyw.com/api.php/provide/vod/' },
+  { key: 'ckzy', name: '采客资源', api: 'https://caiji.ckzy.me/api.php/provide/vod/' },
+  { key: 'kkzy', name: '快客资源', api: 'https://kuaikezy.com/api.php/provide/vod/' },
+  { key: 'subzy', name: '速播资源', api: 'https://subocaiji.com/api.php/provide/vod/' },
+  { key: 'tiankong', name: '天空资源', api: 'https://m3u8.tiankongapi.com/api.php/provide/vod/' },
+  { key: 'dbzy', name: '豆瓣资源', api: 'https://dbzy.com/api.php/provide/vod/' },
+  { key: 'hyzy', name: '海洋资源', api: 'https://haiyangzyapi.com/api.php/provide/vod/' },
+  { key: 'xlzy', name: '新浪资源', api: 'https://api.xinlangapi.com/api.php/provide/vod/' },
+  { key: 'mhzy', name: '猕猴桃资源', api: 'https://mihoutaow.com/api.php/provide/vod/' },
+  { key: 'hfzy', name: '黑狐资源', api: 'https://fuhu.2s0.cn/api.php/provide/vod/' },
+  { key: 'zmzy', name: '追剧资源', api: 'https://www.zhuijuka.com/api.php/provide/vod/' }
   ];
 }
 
