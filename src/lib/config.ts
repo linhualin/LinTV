@@ -354,6 +354,143 @@ export function configSelfCheck(adminConfig: AdminConfig): AdminConfig {
   if (!adminConfig.SourceConfig || !Array.isArray(adminConfig.SourceConfig)) {
     adminConfig.SourceConfig = [];
   }
+
+  // 将代码中新增的内置视频源合并到数据库旧配置中
+  // 解决重新部署后，Redis / Upstash 仍然使用旧 SourceConfig 的问题
+  const builtInVideoSources: AdminConfig['SourceConfig'] = [
+    {
+      key: 'wzzy',
+      name: '无尽资源',
+      api: 'https://api.wujinapi.me/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'wlzy',
+      name: '卧龙资源',
+      api: 'https://collect.wolongzyw.com/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'ckzy',
+      name: '采客资源',
+      api: 'https://caiji.ckzy.me/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'kkzy',
+      name: '快客资源',
+      api: 'https://kuaikezy.com/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'subzy',
+      name: '速播资源',
+      api: 'https://subocaiji.com/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'tiankong',
+      name: '天空资源',
+      api: 'https://m3u8.tiankongapi.com/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'dbzy',
+      name: '豆瓣资源',
+      api: 'https://dbzy.com/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'hyzy',
+      name: '海洋资源',
+      api: 'https://haiyangzyapi.com/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'xlzy',
+      name: '新浪资源',
+      api: 'https://api.xinlangapi.com/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'mhzy',
+      name: '猕猴桃资源',
+      api: 'https://mihoutaow.com/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'hfzy',
+      name: '黑狐资源',
+      api: 'https://fuhu.2s0.cn/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+    {
+      key: 'zmzy',
+      name: '追剧资源',
+      api: 'https://www.zhuijuka.com/api.php/provide/vod/',
+      disabled: false,
+      from: 'custom',
+    },
+  ];
+
+  const normalizeApi = (api: string) => api.trim().replace(/\/+$/, '');
+
+  builtInVideoSources.forEach((source) => {
+    // 优先按 Key 查找；Key 不一致时再按 API 查找
+    const existingSource =
+      adminConfig.SourceConfig.find((item) => item.key === source.key) ||
+      adminConfig.SourceConfig.find(
+        (item) => normalizeApi(item.api) === normalizeApi(source.api)
+      );
+
+    if (!existingSource) {
+      adminConfig.SourceConfig.push({ ...source });
+      return;
+    }
+
+    // 兼容线上手动添加的 wjjzy，将它统一为 wzzy
+    if (existingSource.key !== source.key) {
+      const oldKey = existingSource.key;
+
+      existingSource.key = source.key;
+
+      // 同步迁移用户的视频源权限，避免旧 Key 导致权限失效
+      adminConfig.UserConfig.Users.forEach((user) => {
+        if (user.enabledApis) {
+          user.enabledApis = user.enabledApis.map((key) =>
+            key === oldKey ? source.key : key
+          );
+        }
+      });
+
+      adminConfig.UserConfig.Tags?.forEach((tag) => {
+        tag.enabledApis = tag.enabledApis.map((key) =>
+          key === oldKey ? source.key : key
+        );
+      });
+    }
+
+    // 更新名称和 API，但保留后台已有的启用/禁用状态
+    existingSource.name = source.name;
+    existingSource.api = source.api;
+    existingSource.from = source.from;
+
+    if (existingSource.disabled === undefined) {
+      existingSource.disabled = false;
+    }
+  });
+  
   if (!adminConfig.CustomCategories || !Array.isArray(adminConfig.CustomCategories)) {
     adminConfig.CustomCategories = [];
   }
