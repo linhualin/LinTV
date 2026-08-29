@@ -358,7 +358,8 @@ function LivePageClient() {
 // 避免依赖 Netlify Serverless 的内存缓存
 if (
   source.key === 'iptv-org-category' ||
-  source.key === 'iptv-org-country'
+  source.key === 'iptv-org-country' ||
+  source.key === 'iptv-org-us'
 ) {
   const response = await fetch(source.url, {
     cache: 'no-store',
