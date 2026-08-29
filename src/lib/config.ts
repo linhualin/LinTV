@@ -503,7 +503,7 @@ const builtInIptvOrgSource: NonNullable<
   AdminConfig['LiveConfig']
 >[number] = {
   key: 'iptv-org-category',
-  name: ' IPTV全球直播源（按分类）',
+  name: 'IPTV全球直播源（按分类）',
   url: 'https://iptv-org.github.io/iptv/index.category.m3u',
   ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36',
   from: 'config',
@@ -550,6 +550,34 @@ if (builtInCountryLiveIndex === -1) {
     ...builtInIptvOrgCountrySource,
   };
 }
+
+// 内置 IPTV-ORG 美国直播源
+const builtInIptvOrgUsSource: NonNullable<
+  AdminConfig['LiveConfig']
+>[number] = {
+  key: 'iptv-org-us',
+  name: 'IPTV 美国直播源',
+  url: 'https://iptv-org.github.io/iptv/countries/us.m3u',
+  ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36',
+  from: 'config',
+  disabled: false,
+};
+
+const builtInUsLiveIndex = adminConfig.LiveConfig.findIndex(
+  (live) => live.key === builtInIptvOrgUsSource.key
+);
+
+if (builtInUsLiveIndex === -1) {
+  // 插入到第三位
+  adminConfig.LiveConfig.splice(2, 0, builtInIptvOrgUsSource);
+} else {
+  // 更新内置地址，同时保留频道数量等运行数据
+  adminConfig.LiveConfig[builtInUsLiveIndex] = {
+    ...adminConfig.LiveConfig[builtInUsLiveIndex],
+    ...builtInIptvOrgUsSource,
+  };
+}
+  
   // 站长变更自检
   const ownerUser = process.env.USERNAME;
 
