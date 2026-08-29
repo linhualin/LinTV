@@ -4,7 +4,7 @@
 
 import Artplayer from 'artplayer';
 import Hls from 'hls.js';
-import { Heart, Radio, Tv } from 'lucide-react';
+import { Heart, Radio, Search, Tv, X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useRef, useState } from 'react';
 
@@ -158,7 +158,11 @@ function LivePageClient() {
 
   // 过滤后的频道列表
   const [filteredChannels, setFilteredChannels] = useState<LiveChannel[]>([]);
-
+  
+  // 频道搜索：输入值与已提交的搜索词分离，避免输入时立即筛选
+  const [channelSearchInput, setChannelSearchInput] = useState('');
+  const [channelSearchQuery, setChannelSearchQuery] = useState('');
+  
   // 节目单信息
   const [epgData, setEpgData] = useState<{
     tvgId: string;
@@ -519,8 +523,12 @@ if (
       // 重置不支持的类型状态
       setUnsupportedType(null);
 
-      // 清空节目单信息
+            // 清空节目单信息
       setEpgData(null);
+
+      // 切换直播源时清除旧的频道搜索条件
+      setChannelSearchInput('');
+      setChannelSearchQuery('');
 
       setCurrentSource(source);
       await fetchChannels(source);
@@ -708,10 +716,46 @@ if (
     }
   };
 
+  // 执行频道搜索（搜索当前直播源中的全部频道）
+  const handleChannelSearch = () => {
+    const query = channelSearchInput.trim();
+    if (!query || isSwitchingSource) return;
+
+    const normalizedQuery = query.toLocaleLowerCase();
+    const matchedChannels = currentChannels.filter((channel) =>
+      channel.name.toLocaleLowerCase().includes(normalizedQuery)
+    );
+
+    setChannelSearchInput(query);
+    setChannelSearchQuery(query);
+    setFilteredChannels(matchedChannels);
+
+    if (channelListRef.current) {
+      channelListRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // 清除频道搜索并恢复当前分类的频道列表
+  const clearChannelSearch = () => {
+    setChannelSearchInput('');
+    setChannelSearchQuery('');
+
+    const restoredChannels =
+      selectedGroup && groupedChannels[selectedGroup]
+        ? groupedChannels[selectedGroup]
+        : currentChannels;
+
+    setFilteredChannels(restoredChannels);
+
+    if (channelListRef.current) {
+      channelListRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   // 切换分组
   const handleGroupChange = (group: string) => {
-    // 如果正在切换直播源，则禁用分组切换
-    if (isSwitchingSource) return;
+    // 搜索期间展示全源匹配结果，不允许分类再次覆盖结果
+    if (isSwitchingSource || channelSearchQuery) return;
 
     setSelectedGroup(group);
     const filtered = currentChannels.filter(channel => channel.group === group);
@@ -1419,6 +1463,65 @@ if (
                 {/* 频道 Tab 内容 */}
                 {activeTab === 'channels' && (
                   <>
+                                        {/* 频道搜索 */}
+                    <form
+                      className='flex items-center gap-2 mb-3 flex-shrink-0'
+                      onSubmit={(event) => {
+                        event.preventDefault();
+
+                        if (channelSearchQuery) {
+                          clearChannelSearch();
+                        } else {
+                          handleChannelSearch();
+                        }
+                      }}
+                    >
+                      <label
+                        htmlFor='channel-search'
+                        className='text-sm font-medium text-gray-700 dark:text-gray-300 flex-shrink-0'
+                      >
+                        搜索
+                      </label>
+
+                      <input
+                        id='channel-search'
+                        type='text'
+                        value={channelSearchInput}
+                        onChange={(event) =>
+                          setChannelSearchInput(event.target.value)
+                        }
+                        placeholder='输入频道名称'
+                        readOnly={!!channelSearchQuery}
+                        disabled={isSwitchingSource}
+                        className='min-w-0 flex-1 rounded-lg border border-gray-300 bg-white/80 px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800/80 dark:text-gray-100 dark:placeholder:text-gray-500'
+                      />
+
+                      <button
+                        type='submit'
+                        aria-label={
+                          channelSearchQuery ? '清除频道搜索' : '搜索频道'
+                        }
+                        title={
+                          channelSearchQuery ? '清除搜索' : '搜索频道'
+                        }
+                        disabled={
+                          isSwitchingSource ||
+                          (!channelSearchQuery &&
+                            !channelSearchInput.trim())
+                        }
+                        className={`flex h-9 w-10 flex-shrink-0 items-center justify-center rounded-lg text-white transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                          channelSearchQuery
+                            ? 'bg-red-500 hover:bg-red-600'
+                            : 'bg-green-600 hover:bg-green-700'
+                        }`}
+                      >
+                        {channelSearchQuery ? (
+                          <X className='h-6 w-6' />
+                        ) : (
+                          <Search className='h-5 w-5' />
+                        )}
+                      </button>
+                    </form>
                     {/* 分组标签 */}
                     <div className='flex items-center gap-4 mb-4 border-b border-gray-300 dark:border-gray-700 -mx-6 px-6 flex-shrink-0'>
                       {/* 切换状态提示 */}
@@ -1465,9 +1568,11 @@ if (
                                 groupButtonRefs.current[index] = el;
                               }}
                               onClick={() => handleGroupChange(group)}
-                              disabled={isSwitchingSource}
+                              disabled={
+                                isSwitchingSource || !!channelSearchQuery
+                              }
                               className={`w-20 relative py-2 text-sm font-medium transition-colors flex-shrink-0 text-center overflow-hidden
-                                 ${isSwitchingSource
+                                 ${isSwitchingSource || channelSearchQuery
                                   ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50'
                                   : selectedGroup === group
                                     ? 'text-green-500 dark:text-green-400'
@@ -1535,11 +1640,16 @@ if (
                           <div className='w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4'>
                             <Tv className='w-8 h-8 text-gray-400 dark:text-gray-600' />
                           </div>
-                          <p className='text-gray-500 dark:text-gray-400 font-medium'>
-                            暂无可用频道
+                                                   <p className='text-gray-500 dark:text-gray-400 font-medium'>
+                            {channelSearchQuery
+                              ? `没有找到匹配“${channelSearchQuery}”的频道`
+                              : '暂无可用频道'}
                           </p>
+
                           <p className='text-sm text-gray-400 dark:text-gray-500 mt-1'>
-                            请选择其他直播源或稍后再试
+                            {channelSearchQuery
+                              ? '请清除关键词或尝试其他搜索'
+                              : '请选择其他直播源或稍后再试'}
                           </p>
                         </div>
                       )}
